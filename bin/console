@@ -1,15 +1,13 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require "bundler/setup"
-require "influx"
+require 'bundler/setup'
+require 'influx'
+require 'influxdb-client'
 
-# You can add fixtures and/or initialization code here to make experimenting
-# with your gem easier. You can also use a different console, if you like.
+Influx.configure do |config|
+  config.client = InfluxDB2::Client.new('https://localhost:8086', 'NgRIkZmPdFv0Yycu8YsOEPF4kjpsb-sApXIpoktjUAB0q9ca8arRoHr4grcyAgZJ5g3WqOPp7izc-8TLOj8avg==')
+end
 
-# (If you use this, don't forget to add pry to your Gemfile!)
-# require "pry"
-# Pry.start
-
-require "irb"
+require 'irb'
 IRB.start(__FILE__)
