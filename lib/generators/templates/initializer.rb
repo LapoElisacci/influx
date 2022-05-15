@@ -3,5 +3,6 @@
 require_relative 'influx'
 
 Influx.configure do |config|
-  config.client = InfluxDB2::Client.new('https://localhost:8086', 'my-token')
+  config.host = 'https://localhost:8086'
+  config.token = 'InfluxDB2-Token'
 end

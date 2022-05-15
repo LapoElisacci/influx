@@ -7,12 +7,17 @@ module Influx
   # Influx configuration
   #
   class Configuration
-    attr_accessor :client
-
-    def client(influxdb_client)
-      raise Influx::ConfigurationError.new('The client must be an instance of InfluxDB2::Client!') unless influxdb_client.is_a? InfluxDB2::Client
-
-      @client = influxdb_client
-    end
+    attr_accessor :host,
+                  :token,
+                  :bucket,
+                  :org,
+                  :precision,
+                  :open_timeout,
+                  :write_timeout,
+                  :read_timeout,
+                  :max_redirect_count,
+                  :redirect_forward_authorization,
+                  :use_ssl,
+                  :verify_mode
   end
 end

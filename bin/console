@@ -6,7 +6,8 @@ require 'influx'
 require 'influxdb-client'
 
 Influx.configure do |config|
-  config.client = InfluxDB2::Client.new('https://localhost:8086', 'NgRIkZmPdFv0Yycu8YsOEPF4kjpsb-sApXIpoktjUAB0q9ca8arRoHr4grcyAgZJ5g3WqOPp7izc-8TLOj8avg==')
+  config.host = 'https://localhost:8086'
+  config.token = 'NgRIkZmPdFv0Yycu8YsOEPF4kjpsb-sApXIpoktjUAB0q9ca8arRoHr4grcyAgZJ5g3WqOPp7izc-8TLOj8avg=='
 end
 
 require 'irb'

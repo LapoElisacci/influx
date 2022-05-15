@@ -10,8 +10,7 @@ Metrics/MethodLength:
 # Tests are declarative, no block length test
 Metrics/BlockLength:
   IgnoredMethods: ["describe", "context", "namespace"]
- 
- 
+  
 AllCops:
   TargetRubyVersion: 3.0.2
   # RuboCop has a bunch of cops enabled by default. This setting tells RuboCop
@@ -103,17 +102,17 @@ Style/DefWithParentheses:
 Style/MethodDefParentheses:
   Enabled: true
 
-# Style/FrozenStringLiteralComment:
-#   Enabled: true
-#   EnforcedStyle: always
-#   Exclude:
-#     - "actionview/test/**/*.builder"
-#     - "actionview/test/**/*.ruby"
-#     - "actionpack/test/**/*.builder"
-#     - "actionpack/test/**/*.ruby"
-#     - "activestorage/db/migrate/**/*.rb"
-#     - "db/migrate/**/*.rb"
-#     - "db/*.rb"
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+  Exclude:
+    - "actionview/test/**/*.builder"
+    - "actionview/test/**/*.ruby"
+    - "actionpack/test/**/*.builder"
+    - "actionpack/test/**/*.ruby"
+    - "activestorage/db/migrate/**/*.rb"
+    - "db/migrate/**/*.rb"
+    - "db/*.rb"
 
 # Use `foo {}` not `foo{}`.
 Layout/SpaceBeforeBlockBraces:

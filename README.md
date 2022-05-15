@@ -5,6 +5,13 @@
 ![](https://ruby-gem-downloads-badge.herokuapp.com/influx?type=total&color=blue)
 ![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)
 
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Configuration](#configuration)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+- [Code of Conduct](#code-of-conduct)
 
 ## Installation
 
@@ -18,7 +25,37 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
+### Configuration
+
+```Ruby
+Influx.configure do |config|
+  config.host = 'https://localhost:8086'
+  config.token = 'InfluxDB2-Token'
+end
+```
+
+**Optional**
+
+| Option | Description | Type | Default |
+|---|---|---|---|
+| bucket | Default destination bucket for writes | String | none |
+| org | Default organization bucket for writes | String | none |
+| precision | Default precision for the unix timestamps within the body line-protocol | String | none |
+| open_timeout | Number of seconds to wait for the connection to open | Integer | 10 |
+| write_timeout | Number of seconds to wait for one block of data to be written | Integer | 10 |
+| read_timeout | Number of seconds to wait for one block of data to be read | Integer | 10 |
+| max_redirect_count | Maximal number of followed HTTP redirects | Integer | 10 |
+| redirect_forward_authorization | Pass Authorization header to different domain during HTTP redirect. | bool | false |
+| use_ssl | Turn on/off SSL for HTTP communication | bool | true |
+| verify_mode | Sets the flags for the certification verification at beginning of SSL/TLS session. | `OpenSSL::SSL::VERIFY_NONE` or `OpenSSL::SSL::VERIFY_PEER` | none |
+
+```ruby
+Influx.configure do |config|
+  config.host = 'https://localhost:8086'
+  config.token = 'InfluxDB2-Token'
+  config.precision = InfluxDB2::WritePrecision::NANOSECOND
+end
+```
 
 ## Development
 
