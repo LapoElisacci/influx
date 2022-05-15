@@ -1,4 +1,5 @@
-## InfluxDB Flux  <!-- omit in toc -->
+# <img src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" width="48"> InfluxDB Flux ORM  <!-- omit in toc -->
+
 <!-- [![CircleCI](https://circleci.com/gh/LapoElisacci/Ksql/tree/main.svg?style=svg)](https://circleci.com/gh/LapoElisacci/Ksql/tree/main)
 ![](https://img.shields.io/static/v1?label=Coverage&message=98.78%&color=brightgreen) -->
 ![](https://img.shields.io/static/v1?label=Latest&message=0.1.0.alpha&color=blue)
