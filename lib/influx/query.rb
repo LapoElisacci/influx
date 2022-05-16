@@ -13,7 +13,7 @@ module Influx
     end
 
     def cumulative_sum
-      @statements << Influx::Flux::CumulativeSum.new
+      @statements << Influx::Flux::CumulativeSum
       self
     end
 
@@ -33,7 +33,7 @@ module Influx
     end
 
     def first
-      @statements << Influx::Flux::First.new
+      @statements << Influx::Flux::First
       self
     end
 
@@ -55,12 +55,12 @@ module Influx
     end
 
     def increase
-      @statements << Influx::Flux::Increase.new
+      @statements << Influx::Flux::Increase
       self
     end
 
     def last
-      @statements << Influx::Flux::Last.new
+      @statements << Influx::Flux::Last
       self
     end
 
@@ -70,7 +70,7 @@ module Influx
     end
 
     def median
-      @statements << Influx::Flux::Median.new
+      @statements << Influx::Flux::Median
       self
     end
 

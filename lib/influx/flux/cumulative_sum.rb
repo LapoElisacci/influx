@@ -5,7 +5,7 @@
 module Influx
   module Flux
     class CumulativeSum
-      def to_flux
+      def self.to_flux
         <<~FLUX.chomp
           |> cumulativeSum()
         FLUX

@@ -5,7 +5,7 @@
 module Influx
   module Flux
     class Median
-      def to_flux
+      def self.to_flux
         <<~FLUX.chomp
           |> median()
         FLUX
