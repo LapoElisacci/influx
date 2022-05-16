@@ -8,6 +8,9 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [Configuration](#configuration)
+- [Queries](#queries)
+  - [From](#from)
+  - [Range](#range)
 - [Development](#development)
 - [Contributing](#contributing)
 - [License](#license)
@@ -25,22 +28,32 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
+The gem allows you to perform Flux queries to InfluxDB in an ORM fashion
+
+```Ruby
+results = Influx.from(bucket: 'my-bucket').range(start: '-1d', stop: 'now()').query
+```
+
 ### Configuration
+
+> If you're including the gem under a Rails application you can run `rails generate influx`.
 
 ```Ruby
 Influx.configure do |config|
   config.host = 'https://localhost:8086'
   config.token = 'InfluxDB2-Token'
+  config.precision = InfluxDB2::WritePrecision::NANOSECOND
+  config.use_ssl = true
 end
 ```
 
-**Optional**
+**Options**
 
 | Option | Description | Type | Default |
 |---|---|---|---|
 | bucket | Default destination bucket for writes | String | none |
 | org | Default organization bucket for writes | String | none |
-| precision | Default precision for the unix timestamps within the body line-protocol | String | none |
+| precision | Default precision for the unix timestamps within the body line-protocol | `InfluxDB2::WritePrecision::SECOND` or `InfluxDB2::WritePrecision::MILLISECOND` or `InfluxDB2::WritePrecision::MICROSECOND` or `InfluxDB2::WritePrecision::NANOSECOND` | none |
 | open_timeout | Number of seconds to wait for the connection to open | Integer | 10 |
 | write_timeout | Number of seconds to wait for one block of data to be written | Integer | 10 |
 | read_timeout | Number of seconds to wait for one block of data to be read | Integer | 10 |
@@ -49,13 +62,43 @@ end
 | use_ssl | Turn on/off SSL for HTTP communication | bool | true |
 | verify_mode | Sets the flags for the certification verification at beginning of SSL/TLS session. | `OpenSSL::SSL::VERIFY_NONE` or `OpenSSL::SSL::VERIFY_PEER` | none |
 
-```ruby
-Influx.configure do |config|
-  config.host = 'https://localhost:8086'
-  config.token = 'InfluxDB2-Token'
-  config.precision = InfluxDB2::WritePrecision::NANOSECOND
-end
+## Queries
+
+The gem acts as an ORM therefore you can chain methods to build your `Flux` query string.
+
+You can always call the `to_flux` method to see a preview or your query:
+
+```Ruby
+flux_query = Influx.from(bucket: 'my-bucket').range(start: '-1d')
+flux_query.to_flux # from(bucket: "my-bucket") |> range(start: -1d)
 ```
+
+### From
+
+The `from` method is the starting point of all queries, it allows you to specify the InfluxDB bucket.
+
+```Ruby
+Influx.from(bucket: 'my-bucket')
+```
+> ⚠️ This is mandatory to perform any query.
+
+### Range
+
+The `range` method allows you to specify the time-range you want to query.
+
+```Ruby
+Influx.from(bucket: 'my-bucket').range(start: '-1d', stop: 'now()')
+```
+
+It supports the `Flux` sytanx as well as `Time`.
+
+```Ruby
+Influx.from(bucket: 'my-bucket').range(start: Time.new.yesterday, stop: Time.new)
+```
+
+> ⚠️ This is mandatory to perform any query.
+
+
 
 ## Development
 

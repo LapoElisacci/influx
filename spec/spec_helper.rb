@@ -14,6 +14,8 @@ Influx.configure do |config|
   config.host = ENV['INFLUX_HOST']
   config.token = ENV['INFLUX_TOKEN']
   config.org = ENV['INFLUX_ORG']
+  config.precision = InfluxDB2::WritePrecision::SECOND
+  config.use_ssl = false
 end
 
 RSpec.configure do |config|

@@ -36,7 +36,23 @@ RSpec.describe Influx do
     expect(described_class.config.use_ssl).to eq(true)
     expect(described_class.config.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
 
-    expect(described_class.query.class).to eq(Influx::Query)
     expect(described_class.client.class).to eq(InfluxDB2::Client)
+  end
+
+  it 'Allows to start a flux query with from' do
+    query = described_class.from(bucket: 'my-bucket')
+    expect(query.class).to eq(Influx::Query)
+    expect(query.to_flux).to eq('from(bucket: "my-bucket") ')
+  end
+
+  it 'Allows to get current time according to configured precision' do
+    allow(Influx.client).to receive(:options).and_return({ precision: 's' })
+    expect(Influx.now.to_s.length).to eq(10)
+    allow(Influx.client).to receive(:options).and_return({ precision: 'ms' })
+    expect(Influx.now.to_s.length).to eq(13)
+    allow(Influx.client).to receive(:options).and_return({ precision: 'us' })
+    expect(Influx.now.to_s.length).to eq(16)
+    allow(Influx.client).to receive(:options).and_return({ precision: 'ns' })
+    expect(Influx.now.to_s.length).to eq(19)
   end
 end

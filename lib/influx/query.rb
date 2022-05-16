@@ -2,9 +2,19 @@
 
 module Influx
   class Query
-    def initialize
-      @from = nil
+    def initialize(bucket:)
+      @from = Influx::Flux::From.new(bucket: bucket)
       @statements = []
+    end
+
+    def query
+      Influx.query_api.query(query: to_flux)
+    end
+
+    def query_stream(&block)
+      Influx.query_api.query_streaming(query: to_flux) do |record|
+        yield record
+      end
     end
 
     def aggregate_window(every:, fn:)
@@ -34,13 +44,6 @@ module Influx
 
     def first
       @statements << Influx::Flux::First
-      self
-    end
-
-    def from(bucket:)
-      raise Influx::Error.new('Bucket value has to be string!') unless bucket.is_a?(String)
-
-      @from = Influx::Flux::From.new(bucket: bucket)
       self
     end
 

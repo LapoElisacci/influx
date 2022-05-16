@@ -8,8 +8,8 @@ module Influx
       attr_accessor :start, :stop
 
       def initialize(start: nil, stop: nil)
-        @start = start
-        @stop = stop
+        @start = start.is_a?(Time) ? start.iso8601 : start
+        @stop = stop.is_a?(Time) ? stop.iso8601 : stop
       end
 
       def to_flux
