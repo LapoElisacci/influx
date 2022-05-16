@@ -4,7 +4,7 @@
 
 module Influx
   module Flux
-    class Sort
+    class Limit
       def initialize(n:)
         raise Influx::Error.new('Limit value has to be Integer!') unless n.is_a?(Integer)
 

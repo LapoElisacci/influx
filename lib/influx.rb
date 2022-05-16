@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'influxdb-client'
+
 require_relative 'influx/configuration'
 require_relative 'influx/version'
 
@@ -45,8 +47,10 @@ module Influx
         max_redirect_count: config.max_redirect_count || 10,
         redirect_forward_authorization: config.redirect_forward_authorization || false,
         use_ssl: config.use_ssl || true,
-        verify_mode: config.verify_mode
+        verify_mode: config.verify_mode || OpenSSL::SSL::VERIFY_NONE
       )
+
+      true
     end
 
     def from(bucket:)

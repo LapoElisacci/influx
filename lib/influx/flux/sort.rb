@@ -13,7 +13,7 @@ module Influx
 
       def to_flux
         <<~FLUX.chomp
-          |> sort(#{@columns.to_json})
+          |> sort(columns: #{@columns.to_json})
         FLUX
       end
     end

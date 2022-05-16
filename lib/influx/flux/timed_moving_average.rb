@@ -12,7 +12,7 @@ module Influx
 
       def to_flux
         <<~FLUX.chomp
-          |> timedMovingAverage(every: #{@every}, period: #{period})
+          |> timedMovingAverage(every: #{@every}, period: #{@period})
         FLUX
       end
     end

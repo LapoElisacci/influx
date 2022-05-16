@@ -6,7 +6,7 @@
 module Influx
   module Flux
     class Fill
-      def initialize(use_previous:, value:)
+      def initialize(use_previous: false, value: nil)
         @use_previous = use_previous
         @value = value
       end
