@@ -1,5 +1,4 @@
-# <img src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" width="48"> InfluxDB Flux ORM  <!-- omit in toc -->
-
+## InfluxDB Flux  <!-- omit in toc -->
 <!-- [![CircleCI](https://circleci.com/gh/LapoElisacci/Ksql/tree/main.svg?style=svg)](https://circleci.com/gh/LapoElisacci/Ksql/tree/main)
 ![](https://img.shields.io/static/v1?label=Coverage&message=98.78%&color=brightgreen) -->
 ![](https://img.shields.io/static/v1?label=Latest&message=0.1.0.alpha&color=blue)
@@ -9,9 +8,15 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [Configuration](#configuration)
-- [Queries](#queries)
+- [Utility](#utility)
+  - [Now](#now)
+- [Write data](#write-data)
+- [Query data](#query-data)
   - [From](#from)
   - [Range](#range)
+  - [Aggregate Window](#aggregate-window)
+  - [Cumulative sum](#cumulative-sum)
+  - [Group](#group)
 - [Development](#development)
 - [Contributing](#contributing)
 - [License](#license)
@@ -63,7 +68,72 @@ end
 | use_ssl | Turn on/off SSL for HTTP communication | bool | true |
 | verify_mode | Sets the flags for the certification verification at beginning of SSL/TLS session. | `OpenSSL::SSL::VERIFY_NONE` or `OpenSSL::SSL::VERIFY_PEER` | none |
 
-## Queries
+## Utility
+
+Here are some utility methods provided by the gem.
+
+### Now
+
+The gem provides a method to return the current timestamp according to the configured precision.
+
+```Ruby
+Influx.now
+```
+
+---
+
+## Write data
+
+The gem only supports synchronous writes into InfluxDB 2.x.
+
+**Configure destination**
+
+Default `bucket`, `organization` and `precision` are configured via `Influx.configure`:
+
+```Ruby
+Influx.configure do |config|
+  config.host = 'https://localhost:8086'
+  config.token = 'InfluxDB2-Token'
+  config.org = 'my-org'
+  config.bucket = 'my-bucket'
+  config.precision = InfluxDB2::WritePrecision::NANOSECOND
+end
+
+Influx::Point.new(
+  'my-measurement',
+  tags: { location: 'west' },
+  fields: { value: 33 },
+  time: Influx.now # The default value is Influx.now, you can also use Time or Integer
+).save
+```
+
+but there is also possibility to override configuration per write:
+
+```Ruby
+Influx.configure do |config|
+  config.host = 'https://localhost:8086'
+  config.token = 'InfluxDB2-Token'
+end
+
+point = Influx::Point.new('my-measurement', tags: { location: 'west' }, fields: { value: 33 }, time: Influx.now)
+point.save(
+  bucket: 'my-bucket',
+  org: 'my-org',
+  precision: InfluxDB2::WritePrecision::NANOSECOND
+)
+```
+
+You can always call the `to_flux` method to check how the point looks like in Flux
+
+```Ruby
+point = Influx::Point.new('my-measurement', tags: { location: 'west' }, fields: { value: 33 }, time: Influx.now)
+
+point.to_flux # my-measurement,location=west value=33 1652720908000000
+```
+
+> Batching writes are coming soon.
+
+## Query data
 
 The gem acts as an ORM therefore you can chain methods to build your `Flux` query string.
 
@@ -98,6 +168,41 @@ Influx.from(bucket: 'my-bucket').range(start: Time.new.yesterday, stop: Time.new
 ```
 
 > ⚠️ This is mandatory to perform any query.
+
+
+---
+
+Many of the examples provided in the following guides use a data variable, which represents a basic query. `data` is defined as:
+
+```Ruby
+data = Influx.from(bucket: 'my-bucket').range(start: Time.new.yesterday, stop: Time.new)
+```
+
+---
+
+### Aggregate Window
+
+<img align="left" src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" height="25"> Documentation [here](https://docs.influxdata.com/influxdb/cloud/query-data/flux/#window--aggregate).
+
+```Ruby
+data.aggregate_window(every: '1h', fn: 'mean') # |> aggregateWindow(every: 1h, fn: mean)
+```
+
+### Cumulative sum
+
+<img align="left" src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" height="25"> Documentation [here](https://docs.influxdata.com/influxdb/cloud/query-data/flux/#cumulative-sum).
+
+```Ruby
+data.cumulative_sum # |> cumulativeSum()
+```
+
+### Group
+
+<img align="left" src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" height="25"> Documentation [here](https://docs.influxdata.com/influxdb/cloud/query-data/flux/#group).
+
+```Ruby
+data.group(columns: ["host"], mode: "by") # |> group(columns: ["host"], mode: "by")
+```
 
 
 
