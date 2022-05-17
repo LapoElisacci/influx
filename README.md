@@ -3,6 +3,7 @@
 ![](https://img.shields.io/static/v1?label=Coverage&message=99.54%&color=brightgreen)
 ![](https://img.shields.io/static/v1?label=Latest&message=0.1.0&color=blue)
 ![](https://ruby-gem-downloads-badge.herokuapp.com/influx?type=total&color=blue)
+![](https://img.shields.io/static/v1?label=License&message=MIT&color=green)
 ![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)
 
 Write InfluxDB Flux queries in an ORM fashion with Ruby.
