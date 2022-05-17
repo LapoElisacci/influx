@@ -1,4 +1,4 @@
-## <img align="left" src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" height="35" style="margin-right: 10px"> Ruby InfluxDB Flux  <!-- omit in toc -->
+## <img src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" width="48"> Ruby InfluxDB Flux  <!-- omit in toc -->
 <!-- [![CircleCI](https://circleci.com/gh/LapoElisacci/Ksql/tree/main.svg?style=svg)](https://circleci.com/gh/LapoElisacci/Ksql/tree/main) -->
 ![](https://img.shields.io/static/v1?label=Coverage&message=99.54%&color=brightgreen)
 ![](https://img.shields.io/static/v1?label=Latest&message=0.1.0.alpha&color=blue)
@@ -124,24 +124,24 @@ Influx.from(bucket: 'my-bucket').range(start: Time.new.yesterday, stop: Time.new
 
 The following guides are based on top of the original InfluxData Flux Documentation, available [here](https://docs.influxdata.com/influxdb/cloud/query-data/flux/).
 
-
-<div style="border: 1px solid #34BA55; background-color: #EDF8EE; padding: 20px; color: #016F49">
-<b>Example data variable</b>
-<p>
-Many of the examples provided in the following guides use a <b>data</b> variable, which represents a basic query that filters data by measurement and field. <b>data</b> is defined as:
-</p>
+**Example data variable**
+Many of the examples provided in the following guides use a **data** variable, which represents a basic query that filters data by measurement and field. **data** is defined as:
 
 ```Ruby
 data = Influx.from(bucket: 'my-bucket').range(start: '-1d', stop: 'now()')
+
+# from(bucket: "my-bucket")
+#   |> range(start: -1d, stop: now())
 ```
-</div>
 
 ### From
 
 The `from` method allows you to specify the InfluxDB bucket. Every query starts with the `from` method.
 
 ```Ruby
-Influx.from(bucket: 'my-bucket') # from(bucket: "my-bucket")
+Influx.from(bucket: 'my-bucket')
+
+# from(bucket: "my-bucket")
 ```
 
 ### Range
@@ -149,8 +149,16 @@ Influx.from(bucket: 'my-bucket') # from(bucket: "my-bucket")
 The `range` method allows you to bind your query to a time range, it supports native Flux syntax as well as the Ruby `Time` class and `Integer`.
 
 ```Ruby
-Influx.from(bucket: 'my-bucket').range(start: '-1d', stop: 'now()') # from(bucket: "my-bucket") |> range(start: -1d, stop: now())
-Influx.from(bucket: 'my-bucket').range(start: Time.new(2018, 1, 1, 0, 0, 0, '+00:00').utc, stop: 1514768400) # |> range(start: 2018-01-01T00:00:00Z, stop: 2018-01-01T01:00:00Z)
+Influx.from(bucket: 'my-bucket').range(start: '-1d', stop: 'now()')
+
+# from(bucket: "my-bucket")
+#   |> range(start: -1d, stop: now())
+```
+```Ruby
+Influx.from(bucket: 'my-bucket').range(start: Time.new(2018, 1, 1, 0, 0, 0, '+00:00').utc, stop: 1514768400)
+
+# from(bucket: "my-bucket")
+#   |> range(start: 2018-01-01T00:00:00Z, stop: 2018-01-01T01:00:00Z)
 ```
 
 ---
