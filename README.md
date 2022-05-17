@@ -1,8 +1,9 @@
 ## <img src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" width="48" align="left"> Ruby InfluxDB Flux  <!-- omit in toc -->
 [![CircleCI](https://circleci.com/gh/LapoElisacci/influx/tree/main.svg?style=svg)](https://circleci.com/gh/LapoElisacci/influx/tree/main)
 ![](https://img.shields.io/static/v1?label=Coverage&message=99.54%&color=brightgreen)
-![](https://img.shields.io/static/v1?label=Latest&message=0.1.0.alpha&color=blue)
+![](https://img.shields.io/static/v1?label=Latest&message=0.1.0&color=blue)
 ![](https://ruby-gem-downloads-badge.herokuapp.com/influx?type=total&color=blue)
+![](https://img.shields.io/static/v1?label=License&message=MIT&color=green)
 ![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)
 
 Write InfluxDB Flux queries in an ORM fashion with Ruby.
