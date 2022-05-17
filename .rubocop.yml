@@ -1,5 +1,3 @@
-# require: rubocop-graphql
-
 # Allow longer lines and methods
 Layout/LineLength:
   Max: 500
