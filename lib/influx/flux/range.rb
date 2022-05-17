@@ -8,8 +8,8 @@ module Influx
       attr_accessor :start, :stop
 
       def initialize(start: nil, stop: nil)
-        @start = start.is_a?(Time) ? start.iso8601 : start
-        @stop = stop.is_a?(Time) ? stop.iso8601 : stop
+        @start = cast_value(start)
+        @stop = cast_value(stop)
       end
 
       def to_flux
@@ -22,6 +22,23 @@ module Influx
           |> range(#{params.join(', ')})
         FLUX
       end
+
+      private
+
+        def cast_value(time)
+          return if time.nil?
+
+          case time.class.to_s
+          when 'Time'
+            time.iso8601
+          when 'String'
+            time
+          when 'Integer'
+            Time.at(time).iso8601
+          else
+            raise ArgumentError, 'Invalid time format, expected Time, String or Integer'
+          end
+        end
     end
   end
 end

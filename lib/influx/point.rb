@@ -9,10 +9,6 @@ module Influx
       @time = time.to_i
     end
 
-    def save(bucket: nil, org: nil, precision: InfluxDB2::WritePrecision::NANOSECOND)
-      Influx.write_api.write(bucket: bucket || Influx.config.bucket, data: to_flux, org: org || Influx.config.org, precision: precision)
-    end
-
     def to_flux
       "#{@measurement},#{hash_to_flux(@tags)} #{hash_to_flux(@fields)} #{@time}"
     end

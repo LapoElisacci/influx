@@ -6,18 +6,6 @@ SimpleCov.start
 
 require 'influx'
 
-ENV['INFLUX_HOST'] = 'https://localhost:8086'
-ENV['INFLUX_TOKEN'] = 'NgRIkZmPdFv0Yycu8YsOEPF4kjpsb-sApXIpoktjUAB0q9ca8arRoHr4grcyAgZJ5g3WqOPp7izc-8TLOj8avg=='
-ENV['INFLUX_ORG'] =  'pulsar'
-
-Influx.configure do |config|
-  config.host = ENV['INFLUX_HOST']
-  config.token = ENV['INFLUX_TOKEN']
-  config.org = ENV['INFLUX_ORG']
-  config.precision = InfluxDB2::WritePrecision::SECOND
-  config.use_ssl = false
-end
-
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

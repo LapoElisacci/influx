@@ -1,23 +1,39 @@
-## InfluxDB Flux  <!-- omit in toc -->
-<!-- [![CircleCI](https://circleci.com/gh/LapoElisacci/Ksql/tree/main.svg?style=svg)](https://circleci.com/gh/LapoElisacci/Ksql/tree/main)
-![](https://img.shields.io/static/v1?label=Coverage&message=98.78%&color=brightgreen) -->
+## <img align="left" src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" height="35" style="margin-right: 10px"> Ruby InfluxDB Flux  <!-- omit in toc -->
+<!-- [![CircleCI](https://circleci.com/gh/LapoElisacci/Ksql/tree/main.svg?style=svg)](https://circleci.com/gh/LapoElisacci/Ksql/tree/main) -->
+![](https://img.shields.io/static/v1?label=Coverage&message=99.54%&color=brightgreen)
 ![](https://img.shields.io/static/v1?label=Latest&message=0.1.0.alpha&color=blue)
 ![](https://ruby-gem-downloads-badge.herokuapp.com/influx?type=total&color=blue)
 ![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)
 
+Write InfluxDB Flux queries in an ORM fashion with Ruby.
+
+## Table of contents
+
+- [Table of contents](#table-of-contents)
 - [Installation](#installation)
-- [Usage](#usage)
-  - [Configuration](#configuration)
-- [Utility](#utility)
+- [Utilities](#utilities)
   - [Now](#now)
-- [Write data](#write-data)
-- [Query data](#query-data)
+- [Flux points](#flux-points)
+- [Flux queries](#flux-queries)
   - [From](#from)
   - [Range](#range)
-  - [Aggregate Window](#aggregate-window)
-  - [Cumulative sum](#cumulative-sum)
+- [Query data with Flux](#query-data-with-flux)
+  - [From](#from-1)
+  - [Range](#range-1)
+  - [Query fields and tags](#query-fields-and-tags)
   - [Group](#group)
-- [Development](#development)
+  - [Sort and limit](#sort-and-limit)
+  - [Window & aggregate](#window--aggregate)
+  - [Increase](#increase)
+  - [Moving Average](#moving-average)
+  - [Rate](#rate)
+  - [Histograms](#histograms)
+  - [Fill](#fill)
+  - [Median](#median)
+  - [Percentile & quantile](#percentile--quantile)
+  - [Join (TBD)](#join-tbd)
+  - [Cumulative sum](#cumulative-sum)
+  - [First & last](#first--last)
 - [Contributing](#contributing)
 - [License](#license)
 - [Code of Conduct](#code-of-conduct)
@@ -32,108 +48,41 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install influx
 
-## Usage
-
-The gem allows you to perform Flux queries to InfluxDB in an ORM fashion
-
-```Ruby
-results = Influx.from(bucket: 'my-bucket').range(start: '-1d', stop: 'now()').query
-```
-
-### Configuration
-
-> If you're including the gem under a Rails application you can run `rails generate influx`.
-
-```Ruby
-Influx.configure do |config|
-  config.host = 'https://localhost:8086'
-  config.token = 'InfluxDB2-Token'
-  config.precision = InfluxDB2::WritePrecision::NANOSECOND
-  config.use_ssl = true
-end
-```
-
-**Options**
-
-| Option | Description | Type | Default |
-|---|---|---|---|
-| bucket | Default destination bucket for writes | String | none |
-| org | Default organization bucket for writes | String | none |
-| precision | Default precision for the unix timestamps within the body line-protocol | `InfluxDB2::WritePrecision::SECOND` or `InfluxDB2::WritePrecision::MILLISECOND` or `InfluxDB2::WritePrecision::MICROSECOND` or `InfluxDB2::WritePrecision::NANOSECOND` | none |
-| open_timeout | Number of seconds to wait for the connection to open | Integer | 10 |
-| write_timeout | Number of seconds to wait for one block of data to be written | Integer | 10 |
-| read_timeout | Number of seconds to wait for one block of data to be read | Integer | 10 |
-| max_redirect_count | Maximal number of followed HTTP redirects | Integer | 10 |
-| redirect_forward_authorization | Pass Authorization header to different domain during HTTP redirect. | bool | false |
-| use_ssl | Turn on/off SSL for HTTP communication | bool | true |
-| verify_mode | Sets the flags for the certification verification at beginning of SSL/TLS session. | `OpenSSL::SSL::VERIFY_NONE` or `OpenSSL::SSL::VERIFY_PEER` | none |
-
-## Utility
+## Utilities
 
 Here are some utility methods provided by the gem.
 
 ### Now
 
-The gem provides a method to return the current timestamp according to the configured precision.
+The gem provides a method to return the Clock timestamp in nanoseconds.
 
 ```Ruby
-Influx.now
+Influx.now # Default precision is Nanoseconds
+```
+
+You can also pass other precisions if needed:
+
+```Ruby
+Influx.now(:second)
+Influx.now(:millisecond)
+Influx.now(:microsecond)
+Influx.now(:nanosecond)
 ```
 
 ---
 
-## Write data
-
-The gem only supports synchronous writes into InfluxDB 2.x.
-
-**Configure destination**
-
-Default `bucket`, `organization` and `precision` are configured via `Influx.configure`:
+## Flux points
 
 ```Ruby
-Influx.configure do |config|
-  config.host = 'https://localhost:8086'
-  config.token = 'InfluxDB2-Token'
-  config.org = 'my-org'
-  config.bucket = 'my-bucket'
-  config.precision = InfluxDB2::WritePrecision::NANOSECOND
-end
-
 Influx::Point.new(
-  'my-measurement',
+  'h2o', # measurement
   tags: { location: 'west' },
   fields: { value: 33 },
   time: Influx.now # The default value is Influx.now, you can also use Time or Integer
-).save
+).to_flux # h2o,location=west value=33 1652720908000000
 ```
 
-but there is also possibility to override configuration per write:
-
-```Ruby
-Influx.configure do |config|
-  config.host = 'https://localhost:8086'
-  config.token = 'InfluxDB2-Token'
-end
-
-point = Influx::Point.new('my-measurement', tags: { location: 'west' }, fields: { value: 33 }, time: Influx.now)
-point.save(
-  bucket: 'my-bucket',
-  org: 'my-org',
-  precision: InfluxDB2::WritePrecision::NANOSECOND
-)
-```
-
-You can always call the `to_flux` method to check how the point looks like in Flux
-
-```Ruby
-point = Influx::Point.new('my-measurement', tags: { location: 'west' }, fields: { value: 33 }, time: Influx.now)
-
-point.to_flux # my-measurement,location=west value=33 1652720908000000
-```
-
-> Batching writes are coming soon.
-
-## Query data
+## Flux queries
 
 The gem acts as an ORM therefore you can chain methods to build your `Flux` query string.
 
@@ -169,48 +118,212 @@ Influx.from(bucket: 'my-bucket').range(start: Time.new.yesterday, stop: Time.new
 
 > ⚠️ This is mandatory to perform any query.
 
-
 ---
 
-Many of the examples provided in the following guides use a data variable, which represents a basic query. `data` is defined as:
+## Query data with Flux
+
+The following guides are based on top of the original InfluxData Flux Documentation, available [here](https://docs.influxdata.com/influxdb/cloud/query-data/flux/).
+
+
+<div style="border: 1px solid #34BA55; background-color: #EDF8EE; padding: 20px; color: #016F49">
+<b>Example data variable</b>
+<p>
+Many of the examples provided in the following guides use a <b>data</b> variable, which represents a basic query that filters data by measurement and field. <b>data</b> is defined as:
+</p>
 
 ```Ruby
-data = Influx.from(bucket: 'my-bucket').range(start: Time.new.yesterday, stop: Time.new)
+data = Influx.from(bucket: 'my-bucket').range(start: '-1d', stop: 'now()')
+```
+</div>
+
+### From
+
+The `from` method allows you to specify the InfluxDB bucket. Every query starts with the `from` method.
+
+```Ruby
+Influx.from(bucket: 'my-bucket') # from(bucket: "my-bucket")
+```
+
+### Range
+
+The `range` method allows you to bind your query to a time range, it supports native Flux syntax as well as the Ruby `Time` class and `Integer`.
+
+```Ruby
+Influx.from(bucket: 'my-bucket').range(start: '-1d', stop: 'now()') # from(bucket: "my-bucket") |> range(start: -1d, stop: now())
+Influx.from(bucket: 'my-bucket').range(start: Time.new(2018, 1, 1, 0, 0, 0, '+00:00').utc, stop: 1514768400) # |> range(start: 2018-01-01T00:00:00Z, stop: 2018-01-01T01:00:00Z)
 ```
 
 ---
 
-### Aggregate Window
+### Query fields and tags
 
-<img align="left" src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" height="25"> Documentation [here](https://docs.influxdata.com/influxdb/cloud/query-data/flux/#window--aggregate).
-
-```Ruby
-data.aggregate_window(every: '1h', fn: 'mean') # |> aggregateWindow(every: 1h, fn: mean)
-```
-
-### Cumulative sum
-
-<img align="left" src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" height="25"> Documentation [here](https://docs.influxdata.com/influxdb/cloud/query-data/flux/#cumulative-sum).
+Use `filter()` to query data based on fields, tags, or any other column value.
 
 ```Ruby
-data.cumulative_sum # |> cumulativeSum()
+data.filter("_measurement": "example-measurement", tag: "example-tag")
+
+# data
+#   |> filter(fn: (r) => r._measurement == "example-measurement" and r.tag == "example-tag")
 ```
 
 ### Group
 
-<img align="left" src="https://user-images.githubusercontent.com/50866745/168482997-7ed6ae74-aac9-4aee-bf03-fef5e01d683a.png" height="25"> Documentation [here](https://docs.influxdata.com/influxdb/cloud/query-data/flux/#group).
+Use `group()` to group data with common values in specific columns.
 
 ```Ruby
-data.group(columns: ["host"], mode: "by") # |> group(columns: ["host"], mode: "by")
+data.group(columns: ["host"], mode: "by")
+
+# data
+#   |> group(columns: ["host"], mode: "by")
+```
+
+### Sort and limit
+
+Use `sort()` to order records within each table by specific columns and `limit()` to limit the number of records in output tables to a fixed number, `n`.
+
+```Ruby
+data.sort(columns: ["host", "_value"]).limit(4)
+
+# data
+#   |> sort(columns: ["host","_value"])
+#   |> limit(n: 4)
+```
+
+### Window & aggregate
+
+```Ruby
+data.aggregate_window(every: "20m", fn: "mean")
+
+# data
+#   |> aggregateWindow(every: 20m, fn: mean)
+```
+
+### Increase
+
+Use `increase()` to track increases across multiple columns in a table. 
+
+```Ruby
+data.increase
+
+# data
+#   |> increase()
+```
+
+### Moving Average
+
+Use `moving_average()` or `timed_moving_average()` to return the moving average of data.
+
+```Ruby
+data.moving_average(5)
+
+# data
+#   |> movingAverage(n: 5)
+```
+```Ruby
+data.timed_moving_average(every: "2m", period: "4m")
+
+# data
+#   |> timedMovingAverage(every: 2m, period: 4m)
+```
+
+### Rate
+
+Use `derivative()` to calculate the rate of change between subsequent values.
+
+```Ruby
+data.derivative(unit: "1m", non_negative: true)
+
+# data
+#   |> derivative(unit: 1m, nonNegative: true)
+```
+
+### Histograms
+
+Use `histogram()` to create cumulative histograms with Flux.
+
+```Ruby
+data.histogram(column: "_value", upper_bound_column: "le", count_column: "_value", bins: [100.0, 200.0, 300.0, 400.0])
+
+# data
+#   |> histogram(
+#     column: "_value",
+#     upperBoundColumn: "le",
+#     countColumn: "_value",
+#     bins: [100.0,200.0,300.0,400.0]
+#   )
+```
+### Fill
+
+Use `fill()` function to replace null values.
+
+```Ruby
+data.fill(use_previous: true)
+
+# data
+#   |> fill(usePrevious: true)
+```
+```Ruby
+data.fill(value: 0.0)
+# data
+#   |> fill(value: 0.0)
+```
+
+### Median
+
+Use `median()` to return a value representing the 0.5 quantile (50th percentile) or median of input data.
+
+```Ruby
+data.median
+
+# data
+#   |> median()
+```
+
+### Percentile & quantile
+
+Use the `quantile()` function to return all values within the `q` quantile or percentile of input data.
+
+```Ruby
+data.quantile(q: 0.99, method: "estimate_tdigest")
+
+# data
+#   |> quantile(q: 0.99, method: "estimate_tdigest")
 ```
 
 
+### Join (TBD)
 
-## Development
+TBD
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+### Cumulative sum
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Use the `cumulativeSum()` function to calculate a running total of values.
+
+```Ruby
+data.cumulative_sum
+
+# data
+#   |> cumulativeSum()
+```
+
+### First & last
+
+Use `first()` or `last()`  to return the first or last point in an input table.
+
+```Ruby
+data.first
+
+# data
+#   |> first()
+```
+```Ruby
+data.last
+
+# data
+#   |> last()
+```
+
+---
 
 ## Contributing
 

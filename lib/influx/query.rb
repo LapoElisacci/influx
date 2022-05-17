@@ -7,16 +7,6 @@ module Influx
       @statements = []
     end
 
-    def query
-      Influx.query_api.query(query: to_flux)
-    end
-
-    def query_stream(&block)
-      Influx.query_api.query_streaming(query: to_flux) do |record|
-        yield record
-      end
-    end
-
     def aggregate_window(every:, fn:)
       @statements << Influx::Flux::AggregateWindow.new(every: every, fn: fn)
       self

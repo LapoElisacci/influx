@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors = ['Lapo']
   spec.email = ['lapoelisacci@gmail.com']
 
-  spec.summary = 'InfluxDB Flux ORM for Ruby'
-  spec.description = 'InfluxDB Flux ORM for Ruby'
+  spec.summary = 'InfluxDB Flux queries builder for Ruby'
+  spec.description = 'InfluxDB Flux queries builder for Ruby'
   spec.homepage = 'https://github.com/LapoElisacci/influx'
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 2.6.0'
@@ -28,6 +28,4 @@ Gem::Specification.new do |spec|
   spec.bindir = 'exe'
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
-
-  spec.add_dependency 'influxdb-client', '~> 2'
 end

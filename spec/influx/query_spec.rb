@@ -141,33 +141,4 @@ RSpec.describe Influx::Query do
       expect(query.to_flux).to eq('from(bucket: "my-bucket") |> timedMovingAverage(every: 10s, period: 1h)')
     end
   end
-
-  def with_test_data(&block)
-    client = InfluxDB2::Client.new(ENV['INFLUX_HOST'], ENV['INFLUX_TOKEN'], org: ENV['INFLUX_ORG'], bucket: 'my-bucket', use_ssl: false, precision: InfluxDB2::WritePrecision::SECOND)
-    now = Influx.now
-    write_api = client.create_write_api
-    write_api.write(data: "h2o,location=west value=33i #{now}")
-    yield
-    client.create_delete_api.delete(Time.at(now - 100), Time.at(now + 1), predicate: 'location="west"')
-  end
-
-  context 'query' do
-    it 'Executes a Query against InfluxDB' do
-      with_test_data do
-        tables = described_class.new(bucket: 'my-bucket').range(start: '-1d', stop: 'now()').query
-        tables.each do |_, table|
-          table.records.each do |record|
-            expect(record.values['_value']).to eq(33)
-            expect(record.values['_field']).to eq('value')
-            expect(record.values['_measurement']).to eq('h2o')
-            expect(record.values['location']).to eq('west')
-          end
-        end
-      end
-    end
-  end
-
-  context 'query_stream' do
-    
-  end
 end
