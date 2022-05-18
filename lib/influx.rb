@@ -29,10 +29,24 @@ module Influx
   class Error < StandardError; end
 
   class << self
+    #
+    # Instantiate a new Influx::Query object with from clause.
+    #
+    # @param [String] bucket InfluxDB bucket nameß
+    #
+    # @return [Influx::Query] InfluxDB query object
+    #
     def from(bucket:)
       Influx::Query.new(bucket: bucket)
     end
 
+    #
+    # Returns the current timestamp according to the passed precision.
+    #
+    # @param [Symbol] precision Timestamp precision
+    #
+    # @return [Integer] Current timestamp
+    #
     def now(precision = :nanosecond)
       Process.clock_gettime(Process::CLOCK_REALTIME, precision)
     end
